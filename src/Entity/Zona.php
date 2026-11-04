@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ZonaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ZonaRepository::class)]
@@ -22,6 +24,17 @@ class Zona
     #[ORM\ManyToOne(inversedBy: 'zonas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Comunidad $comunidad = null;
+
+    /**
+     * @var Collection<int, Incidencia>
+     */
+    #[ORM\OneToMany(targetEntity: Incidencia::class, mappedBy: 'zona')]
+    private Collection $incidencias;
+
+    public function __construct()
+    {
+        $this->incidencias = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -60,6 +73,36 @@ class Zona
     public function setComunidad(?Comunidad $comunidad): static
     {
         $this->comunidad = $comunidad;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Incidencia>
+     */
+    public function getIncidencias(): Collection
+    {
+        return $this->incidencias;
+    }
+
+    public function addIncidencia(Incidencia $incidencia): static
+    {
+        if (!$this->incidencias->contains($incidencia)) {
+            $this->incidencias->add($incidencia);
+            $incidencia->setZona($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIncidencia(Incidencia $incidencia): static
+    {
+        if ($this->incidencias->removeElement($incidencia)) {
+            // set the owning side to null (unless already changed)
+            if ($incidencia->getZona() === $this) {
+                $incidencia->setZona(null);
+            }
+        }
 
         return $this;
     }
