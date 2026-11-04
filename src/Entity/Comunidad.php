@@ -34,9 +34,16 @@ class Comunidad
     #[ORM\OneToMany(targetEntity: Zona::class, mappedBy: 'comunidad')]
     private Collection $zonas;
 
+    /**
+     * @var Collection<int, Aviso>
+     */
+    #[ORM\OneToMany(targetEntity: Aviso::class, mappedBy: 'comunidad')]
+    private Collection $avisos;
+
     public function __construct()
     {
         $this->zonas = new ArrayCollection();
+        $this->avisos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -116,6 +123,36 @@ class Comunidad
             // set the owning side to null (unless already changed)
             if ($zona->getComunidad() === $this) {
                 $zona->setComunidad(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Aviso>
+     */
+    public function getAvisos(): Collection
+    {
+        return $this->avisos;
+    }
+
+    public function addAviso(Aviso $aviso): static
+    {
+        if (!$this->avisos->contains($aviso)) {
+            $this->avisos->add($aviso);
+            $aviso->setComunidad($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAviso(Aviso $aviso): static
+    {
+        if ($this->avisos->removeElement($aviso)) {
+            // set the owning side to null (unless already changed)
+            if ($aviso->getComunidad() === $this) {
+                $aviso->setComunidad(null);
             }
         }
 
