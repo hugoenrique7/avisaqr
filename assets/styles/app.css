@@ -1,0 +1,22 @@
+body {
+    background-color: #f5f7fa;
+}
+
+.titulo {
+    color: #1f3a5f;
+}
+
+.btn-primary {
+    background-color: #1f3a5f;
+    border-color: #1f3a5f;
+}
+
+.btn-primary:hover {
+    background-color: #172c48;
+    border-color: #172c48;
+}
+
+.logo {
+    max-width: 180px;
+    height: auto;
+}
