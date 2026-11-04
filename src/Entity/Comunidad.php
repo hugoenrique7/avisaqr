@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ComunidadRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ComunidadRepository::class)]
@@ -25,6 +27,17 @@ class Comunidad
     #[ORM\ManyToOne(inversedBy: 'comunidades')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Administrador $administrador = null;
+
+    /**
+     * @var Collection<int, Zona>
+     */
+    #[ORM\OneToMany(targetEntity: Zona::class, mappedBy: 'comunidad')]
+    private Collection $zonas;
+
+    public function __construct()
+    {
+        $this->zonas = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +88,36 @@ class Comunidad
     public function setAdministrador(?Administrador $administrador): static
     {
         $this->administrador = $administrador;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Zona>
+     */
+    public function getZonas(): Collection
+    {
+        return $this->zonas;
+    }
+
+    public function addZona(Zona $zona): static
+    {
+        if (!$this->zonas->contains($zona)) {
+            $this->zonas->add($zona);
+            $zona->setComunidad($this);
+        }
+
+        return $this;
+    }
+
+    public function removeZona(Zona $zona): static
+    {
+        if ($this->zonas->removeElement($zona)) {
+            // set the owning side to null (unless already changed)
+            if ($zona->getComunidad() === $this) {
+                $zona->setComunidad(null);
+            }
+        }
 
         return $this;
     }
