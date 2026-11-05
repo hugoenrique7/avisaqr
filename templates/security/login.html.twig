@@ -21,13 +21,6 @@
                             </div>
                         {% endif %}
 
-                        {% if app.user %}
-                            <div class="alert alert-info">
-                                Ya has iniciado sesión como {{ app.user.userIdentifier }}.
-                                <a href="{{ path('app_logout') }}">Cerrar sesión</a>
-                            </div>
-                        {% endif %}
-
                         <form method="post">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Correo electrónico</label>
