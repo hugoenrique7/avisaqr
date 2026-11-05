@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Comunidad{% endblock %}
+
+{% block body %}
+    <h1>Create new Comunidad</h1>
+
+    {{ include('comunidad/_form.html.twig') }}
+
+    <a href="{{ path('app_comunidad_index') }}">back to list</a>
+{% endblock %}
