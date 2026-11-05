@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\ComunidadRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,12 +17,17 @@ class Comunidad
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
+    #[Assert\NotBlank(message: 'Escribe el nombre de la comunidad.')]
+    #[Assert\Length(max: 150)]
     private ?string $nombre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Escribe la dirección.')]
+    #[Assert\Length(max: 255)]
     private ?string $direccion = null;
 
     #[ORM\Column(length: 6)]
+    #[Assert\NotBlank(message: 'Escribe un PIN.')]
     private ?string $pin = null;
 
     #[ORM\ManyToOne(inversedBy: 'comunidades')]
