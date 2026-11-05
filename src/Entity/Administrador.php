@@ -39,6 +39,9 @@ class Administrador implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Comunidad::class, mappedBy: 'administrador')]
     private Collection $comunidades;
 
+    #[ORM\Column(length: 100)]
+    private ?string $nombre = null;
+
     public function __construct()
     {
         $this->comunidades = new ArrayCollection();
@@ -151,6 +154,18 @@ class Administrador implements UserInterface, PasswordAuthenticatedUserInterface
                 $comunidade->setAdministrador(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNombre(): ?string
+    {
+        return $this->nombre;
+    }
+
+    public function setNombre(string $nombre): static
+    {
+        $this->nombre = $nombre;
 
         return $this;
     }
