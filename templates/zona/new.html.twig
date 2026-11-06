@@ -1,0 +1,20 @@
+{% extends 'panel/layout.html.twig' %}
+
+{% block title %}Nueva zona · AvisaQR{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-7">
+            <a href="{{ path('app_comunidad_show', {'id': comunidad.id}) }}" class="small">&larr; Volver a {{ comunidad.nombre }}</a>
+            <h1 class="h4 my-3">Nueva zona</h1>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {{ include('zona/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

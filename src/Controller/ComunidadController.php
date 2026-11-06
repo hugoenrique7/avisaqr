@@ -36,7 +36,7 @@ final class ComunidadController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // la comunidad pertenece al administrador conectado
+           
             $comunidad->setAdministrador($this->getUser());
 
             $entityManager->persist($comunidad);
@@ -86,15 +86,22 @@ final class ComunidadController extends AbstractController
     {
         $this->comprobarPropietario($comunidad);
 
-        if ($this->isCsrfTokenValid('delete'.$comunidad->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $comunidad->getId(), $request->getPayload()->getString('_token'))) {
+            if (count($comunidad->getZonas()) > 0) {
+                $this->addFlash('error', 'No se puede borrar "' . $comunidad->getNombre() . '" porque tiene zonas. Borra antes sus zonas.');
+
+                return $this->redirectToRoute('app_comunidad_show', ['id' => $comunidad->getId()], Response::HTTP_SEE_OTHER);
+            }
+
             $entityManager->remove($comunidad);
             $entityManager->flush();
+            $this->addFlash('exito', 'Comunidad borrada.');
         }
 
         return $this->redirectToRoute('app_comunidad_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    // CAMBIO: si la comunidad no es del administrador conectado, acceso denegado
+
     private function comprobarPropietario(Comunidad $comunidad): void
     {
         if ($comunidad->getAdministrador() !== $this->getUser()) {

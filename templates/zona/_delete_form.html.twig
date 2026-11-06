@@ -1,0 +1,5 @@
+<form method="post" action="{{ path('app_zona_delete', {'id': zona.id}) }}" class="d-inline"
+      onsubmit="return confirm('¿Seguro que quieres borrar esta zona?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ zona.id) }}">
+    <button class="btn btn-sm btn-outline-danger">Borrar</button>
+</form>

@@ -1,33 +1,51 @@
 {% extends 'base.html.twig' %}
 
 {% block menu %}
-<nav class="navbar navbar-expand-md bg-white border-bottom shadow-sm mb-4 py-0">
-    <div class="container">
-        <a class="navbar-brand" href="{{ path('app_panel') }}">
-            <img src="{{ asset('images/logo.png') }}" alt="AvisaQR" height="80">
-        </a>
+    <nav class="navbar navbar-expand-md bg-white border-bottom shadow-sm mb-4 py-0">
+        <div class="container">
+            <a class="navbar-brand" href="{{ path('app_panel') }}">
+                <img src="{{ asset('images/logo.png') }}" alt="AvisaQR" height="80">
+            </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#menuPanel" aria-controls="menuPanel"
-                aria-expanded="false" aria-label="Abrir menú">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menuPanel"
+                aria-controls="menuPanel"
+                aria-expanded="false"
+                aria-label="Abrir menú"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="menuPanel">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link {{ app.current_route == 'app_panel' ? 'active' }}"
-                       href="{{ path('app_panel') }}">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ app.current_route starts with 'app_comunidad' ? 'active' }}"
-                       href="{{ path('app_comunidad_index') }}">Comunidades</a>
-                </li>
-            </ul>
+            <div class="collapse navbar-collapse" id="menuPanel">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a
+                            class="nav-link {{ app.current_route == 'app_panel' ? 'active' }}"
+                            href="{{ path('app_panel') }}"
+                        >Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            class="nav-link {{ app.current_route starts with 'app_comunidad' or app.current_route starts with 'app_zona' ? 'active' }}"
+                            href="{{ path('app_comunidad_index') }}"
+                        >Comunidades</a>
+                    </li>
+                </ul>
 
-            <span class="navbar-text me-3">{{ app.user.nombre }}</span>
-            <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary btn-sm">Cerrar sesión</a>
+
+                <span class="navbar-text me-3">{{ app.user.nombre }}</span>
+                <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary btn-sm">Cerrar sesión</a>
+            </div>
         </div>
+    </nav>
+    <div class="container">
+        {% for tipo, mensajes in app.flashes %}
+            {% for mensaje in mensajes %}
+                <div class="alert {{ tipo == 'error' ? 'alert-danger' : 'alert-success' }}">{{ mensaje }}</div>
+            {% endfor %}
+        {% endfor %}
     </div>
-</nav>
 {% endblock %}

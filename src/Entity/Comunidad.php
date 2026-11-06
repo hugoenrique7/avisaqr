@@ -38,6 +38,7 @@ class Comunidad
      * @var Collection<int, Zona>
      */
     #[ORM\OneToMany(targetEntity: Zona::class, mappedBy: 'comunidad')]
+    #[ORM\OrderBy(['nombre' => 'ASC'])]
     private Collection $zonas;
 
     /**

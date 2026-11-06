@@ -3,29 +3,72 @@
 {% block title %}{{ comunidad.nombre }} · AvisaQR{% endblock %}
 
 {% block body %}
-<div class="container py-4">
-    <a href="{{ path('app_comunidad_index') }}" class="small">&larr; Volver a mis comunidades</a>
+    <div class="container py-4">
+        <a href="{{ path('app_comunidad_index') }}" class="small">&larr; Volver a mis comunidades</a>
 
-    <div class="d-flex justify-content-between align-items-center my-3">
-        <h1 class="h4 mb-0">{{ comunidad.nombre }}</h1>
-        <div>
-            <a href="{{ path('app_comunidad_edit', {'id': comunidad.id}) }}" class="btn btn-sm btn-outline-primary">Editar</a>
-            {{ include('comunidad/_delete_form.html.twig') }}
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <h1 class="h4 mb-0">{{ comunidad.nombre }}</h1>
+            <div>
+                <a href="{{ path('app_comunidad_edit', {'id': comunidad.id}) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                {{ include('comunidad/_delete_form.html.twig') }}
+               
+            </div>
+
+          
+
         </div>
-    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <dl class="row mb-0">
-                <dt class="col-sm-3">Dirección</dt>
-                <dd class="col-sm-9">{{ comunidad.direccion }}</dd>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Dirección</dt>
+                    <dd class="col-sm-9">{{ comunidad.direccion }}</dd>
 
-                <dt class="col-sm-3">PIN</dt>
-                <dd class="col-sm-9 mb-0"><code>{{ comunidad.pin }}</code></dd>
-            </dl>
+                    <dt class="col-sm-3">PIN</dt>
+                    <dd class="col-sm-9 mb-0"><code>{{ comunidad.pin }}</code></dd>
+                </dl>
+            </div>
         </div>
-    </div>
 
-   
-</div>
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <h2 class="h5 mb-0">Zonas</h2>
+            <a href="{{ path('app_zona_new', {'id': comunidad.id}) }}" class="btn btn-primary btn-sm">Nueva zona</a>
+        </div>
+
+        {% if comunidad.zonas is empty %}
+            <div class="alert alert-info">
+                Esta comunidad todavía no tiene zonas. Añade el portal, el ascensor, el garaje...
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle bg-white">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Zona</th>
+                            <th>Código QR</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for zona in comunidad.zonas %}
+                            <tr>
+                                <td>{{ zona.nombre }}</td>
+                                <td>
+                                    {% if zona.tieneQr %}
+                                        <span class="badge text-bg-success">Sí</span>
+                                    {% else %}
+                                        <span class="badge text-bg-secondary">No</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_zona_edit', {'id': zona.id}) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                                    {{ include('zona/_delete_form.html.twig') }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

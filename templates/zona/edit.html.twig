@@ -1,0 +1,20 @@
+{% extends 'panel/layout.html.twig' %}
+
+{% block title %}Editar zona · AvisaQR{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-7">
+            <a href="{{ path('app_comunidad_show', {'id': zona.comunidad.id}) }}" class="small">&larr; Volver a {{ zona.comunidad.nombre }}</a>
+            <h1 class="h4 my-3">Editar zona</h1>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {{ include('zona/_form.html.twig', {'button_label': 'Guardar cambios'}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
