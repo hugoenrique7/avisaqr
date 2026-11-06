@@ -28,6 +28,8 @@ class Comunidad
 
     #[ORM\Column(length: 6)]
     #[Assert\NotBlank(message: 'Escribe un PIN.')]
+    #[Assert\Length(max: 6)]
+    #[Assert\NotBlank(message: 'Escribe un PIN.')]
     private ?string $pin = null;
 
     #[ORM\ManyToOne(inversedBy: 'comunidades')]

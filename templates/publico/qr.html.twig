@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avisar de una avería · AvisaQR{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <h1 class="h4">{{ zona.nombre }}</h1>
+    <p class="text-muted">{{ zona.comunidad.nombre }}</p>
+
+    <div class="alert alert-info">
+        Aquí irá el formulario para avisar de una avería.
+    </div>
+</div>
+{% endblock %}
