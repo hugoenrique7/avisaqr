@@ -61,6 +61,20 @@ final class ZonaController extends AbstractController
         ]);
     }
 
+    #[Route('/panel/zonas/{id}/qr', name: 'app_zona_qr', methods: ['GET'])]
+    public function qr(Zona $zona): Response
+    {
+        $this->comprobarPropietario($zona);
+
+        if (!$zona->isTieneQr()) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->render('qr/hoja.html.twig', [
+            'comunidad' => $zona->getComunidad(),
+            'zonas' => [$zona],
+        ]);
+    }
     #[Route('/panel/zonas/{id}', name: 'app_zona_delete', methods: ['POST'])]
     public function delete(Zona $zona, Request $request, EntityManagerInterface $entityManager): Response
     {

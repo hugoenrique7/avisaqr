@@ -20,3 +20,60 @@ body {
     max-width: 180px;
     height: auto;
 }
+.hoja-qr {
+    background-color: white;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.hoja-logo {
+    height: 70px;
+}
+
+.hoja-comunidad {
+    margin-top: 20px;
+    color: #555;
+}
+
+.hoja-zona {
+    font-size: 40px;
+    font-weight: bold;
+    color: #1f3a5f;
+}
+
+.hoja-codigo {
+    width: 320px;
+    height: 320px;
+    margin: 20px 0;
+}
+
+.hoja-texto {
+    font-size: 20px;
+}
+
+.hoja-pie {
+    color: #555;
+}
+
+@media print {
+    .no-imprimir,
+    .sf-toolbar {
+        display: none !important;
+    }
+
+    body {
+        background-color: white;
+    }
+
+    .hoja-qr {
+        border: none;
+        margin: 0 auto;
+    }
+
+    .hoja-qr + .hoja-qr {
+        page-break-before: always;
+    }
+}

@@ -36,7 +36,7 @@ final class ComunidadController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-           
+
             $comunidad->setAdministrador($this->getUser());
 
             $entityManager->persist($comunidad);
@@ -61,6 +61,24 @@ final class ComunidadController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/qr', name: 'app_comunidad_qr', methods: ['GET'])]
+    public function qr(Comunidad $comunidad): Response
+    {
+        $this->comprobarPropietario($comunidad);
+
+        // solo las zonas que tienen QR
+        $zonas = [];
+        foreach ($comunidad->getZonas() as $zona) {
+            if ($zona->isTieneQr()) {
+                $zonas[] = $zona;
+            }
+        }
+
+        return $this->render('qr/hoja.html.twig', [
+            'comunidad' => $comunidad,
+            'zonas' => $zonas,
+        ]);
+    }
     #[Route('/{id}/editar', name: 'app_comunidad_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Comunidad $comunidad, EntityManagerInterface $entityManager): Response
     {

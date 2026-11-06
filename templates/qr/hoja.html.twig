@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Códigos QR · {{ comunidad.nombre }}{% endblock %}
+
+{% block body %}
+    <div class="container py-3 no-imprimir">
+        <a href="{{ path('app_comunidad_show', {'id': comunidad.id}) }}" class="small">&larr; Volver a {{ comunidad.nombre }}</a>
+        <button onclick="window.print()" class="btn btn-primary ms-3">Imprimir</button>
+    </div>
+
+    {% for zona in zonas %}
+        <div class="hoja-qr">
+            <img src="{{ asset('images/logo.png') }}" alt="AvisaQR" class="hoja-logo">
+            <p class="hoja-comunidad">{{ comunidad.nombre }}</p>
+            <h1 class="hoja-zona">{{ zona.nombre }}</h1>
+
+            <img
+                src="{{ qr_code_data_uri(url('app_publico_qr', {'id': zona.id})) }}"
+                alt="Código QR de {{ zona.nombre }}"
+                class="hoja-codigo"
+            >
+
+            <p class="hoja-texto">¿Algo no funciona? Escanea el código con la cámara del móvil y avisa en un minuto.</p>
+            <p class="hoja-pie">No hace falta descargar nada ni registrarse.</p>
+        </div>
+    {% else %}
+        <div class="container">
+            <div class="alert alert-info">Esta comunidad no tiene zonas con código QR.</div>
+        </div>
+    {% endfor %}
+{% endblock %}
