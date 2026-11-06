@@ -1,34 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Comunidad{% endblock %}
+{% block title %}{{ comunidad.nombre }} · AvisaQR{% endblock %}
 
 {% block body %}
-    <h1>Comunidad</h1>
+<div class="container py-4">
+    <a href="{{ path('app_comunidad_index') }}" class="small">&larr; Volver a mis comunidades</a>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ comunidad.id }}</td>
-            </tr>
-            <tr>
-                <th>Nombre</th>
-                <td>{{ comunidad.nombre }}</td>
-            </tr>
-            <tr>
-                <th>Direccion</th>
-                <td>{{ comunidad.direccion }}</td>
-            </tr>
-            <tr>
-                <th>Pin</th>
-                <td>{{ comunidad.pin }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <h1 class="h4 mb-0">{{ comunidad.nombre }}</h1>
+        <div>
+            <a href="{{ path('app_comunidad_edit', {'id': comunidad.id}) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+            {{ include('comunidad/_delete_form.html.twig') }}
+        </div>
+    </div>
 
-    <a href="{{ path('app_comunidad_index') }}">back to list</a>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Dirección</dt>
+                <dd class="col-sm-9">{{ comunidad.direccion }}</dd>
 
-    <a href="{{ path('app_comunidad_edit', {'id': comunidad.id}) }}">edit</a>
+                <dt class="col-sm-3">PIN</dt>
+                <dd class="col-sm-9 mb-0"><code>{{ comunidad.pin }}</code></dd>
+            </dl>
+        </div>
+    </div>
 
-    {{ include('comunidad/_delete_form.html.twig') }}
+   
+</div>
 {% endblock %}

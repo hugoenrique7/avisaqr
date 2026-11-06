@@ -1,13 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Comunidad{% endblock %}
+{% block title %}Editar comunidad - AvisaQR{% endblock %}
 
 {% block body %}
-    <h1>Edit Comunidad</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            
+           
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h1 class="h3 mb-0 fw-bold text-dark">
+                        <i class="bi bi-building-gear text-primary me-2"></i>Editar Comunidad
+                    </h1>
+                </div>
+                <a href="{{ path('app_comunidad_show', {'id': comunidad.id}) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-sm transition-all">
+                    <i class="bi bi-arrow-left me-1"></i> Volver
+                </a>
+            </div>
 
-    {{ include('comunidad/_form.html.twig', {'button_label': 'Update'}) }}
+            
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+             
+                <div class="card-header bg-primary bg-gradient text-white p-4 border-0">
+                    <h5 class="mb-0 fw-semibold">
+                        <i class="bi bi-pencil-square me-2"></i>Datos de la Comunidad
+                    </h5>
+                </div>
+                
+               
+                <div class="card-body p-4 p-md-5 bg-white">
+                
+                    {{ include('comunidad/_form.html.twig', {'button_label': 'Guardar cambios'}) }}
+                </div>
+                
+                
+                <div class="card-footer bg-light border-0 text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i> Asegúrate de revisar los datos antes de guardar.
+                    </small>
+                </div>
+            </div>
 
-    <a href="{{ path('app_comunidad_index') }}">back to list</a>
-
-    {{ include('comunidad/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
 {% endblock %}

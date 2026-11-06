@@ -1,11 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Comunidad{% endblock %}
+{% block title %}Nueva comunidad - AvisaQR{% endblock %}
 
 {% block body %}
-    <h1>Create new Comunidad</h1>
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-7">
+            <a href="{{ path('app_comunidad_index') }}" class="small">&larr; Volver a mis comunidades</a>
+            <h1 class="h4 my-3">Nueva comunidad</h1>
 
-    {{ include('comunidad/_form.html.twig') }}
-
-    <a href="{{ path('app_comunidad_index') }}">back to list</a>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {{ include('comunidad/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
