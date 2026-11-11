@@ -1,13 +1,13 @@
-{% extends 'base.html.twig' %}
+{% extends 'panel/layout.html.twig' %}
 
-{% block title %}Edit Incidencia{% endblock %}
+
+{% block title %}Editar avería{% endblock %}
 
 {% block body %}
-    <h1>Edit Incidencia</h1>
+<h1 class="h3 mb-3">Editar avería {{ incidencia.codigo }}</h1>
 
-    {{ include('incidencia/_form.html.twig', {'button_label': 'Update'}) }}
+{{ include('incidencia/_form.html.twig') }}
 
-    <a href="{{ path('app_incidencia_index') }}">back to list</a>
 
-    {{ include('incidencia/_delete_form.html.twig') }}
+<a href="{{ path('app_incidencia_index') }}" class="btn btn-secondary mt-2">Volver</a>
 {% endblock %}
