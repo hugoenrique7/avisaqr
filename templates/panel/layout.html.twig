@@ -32,6 +32,10 @@
                             class="nav-link {{ app.current_route starts with 'app_comunidad' or app.current_route starts with 'app_zona' ? 'active' }}"
                             href="{{ path('app_comunidad_index') }}"
                         >Comunidades</a>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_incidencia_index') }}">Averías</a>
+                        </li>
+
                     </li>
                 </ul>
 

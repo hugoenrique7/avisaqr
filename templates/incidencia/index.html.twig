@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Incidencia index{% endblock %}
+
+{% block body %}
+    <h1>Incidencia index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Codigo</th>
+                <th>Descripcion</th>
+                <th>Foto</th>
+                <th>Piso</th>
+                <th>Telefono</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>FechaCreacion</th>
+                <th>FechaResolucion</th>
+                <th>CuantidadReabierta</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for incidencia in incidencias %}
+                <tr>
+                    <td>{{ incidencia.id }}</td>
+                    <td>{{ incidencia.codigo }}</td>
+                    <td>{{ incidencia.descripcion }}</td>
+                    <td>{{ incidencia.foto }}</td>
+                    <td>{{ incidencia.piso }}</td>
+                    <td>{{ incidencia.telefono }}</td>
+                    <td>{{ incidencia.estado.etiqueta }}</td>
+                    <td>{{ incidencia.prioridad ? incidencia.prioridad.etiqueta : '' }}</td>
+                    <td>{{ incidencia.fechaCreacion ? incidencia.fechaCreacion|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ incidencia.fechaResolucion ? incidencia.fechaResolucion|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ incidencia.cuantidadReabierta }}</td>
+                    <td>
+                        <a href="{{ path('app_incidencia_show', {'id': incidencia.id}) }}">show</a>
+                        <a href="{{ path('app_incidencia_edit', {'id': incidencia.id}) }}">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="12">no records found</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+{% endblock %}

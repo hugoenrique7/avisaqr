@@ -176,7 +176,6 @@ class Incidencia
 
         return $this;
     }
-
     public function getCuantidadReabierta(): ?int
     {
         return $this->cuantidadReabierta;

@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Incidencia{% endblock %}
+
+{% block body %}
+    <h1>Incidencia</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ incidencia.id }}</td>
+            </tr>
+            <tr>
+                <th>Codigo</th>
+                <td>{{ incidencia.codigo }}</td>
+            </tr>
+            <tr>
+                <th>Descripcion</th>
+                <td>{{ incidencia.descripcion }}</td>
+            </tr>
+            <tr>
+                <th>Foto</th>
+                <td>{{ incidencia.foto }}</td>
+            </tr>
+            <tr>
+                <th>Piso</th>
+                <td>{{ incidencia.piso }}</td>
+            </tr>
+            <tr>
+                <th>Telefono</th>
+                <td>{{ incidencia.telefono }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{ incidencia.estado.etiqueta }}</td>
+            </tr>
+            <tr>
+                <th>Prioridad</th>
+                <td>{{ incidencia.prioridad ? incidencia.prioridad.etiqueta : '' }}</td>
+            </tr>
+            <tr>
+                <th>FechaCreacion</th>
+                <td>{{ incidencia.fechaCreacion ? incidencia.fechaCreacion|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>FechaResolucion</th>
+                <td>{{ incidencia.fechaResolucion ? incidencia.fechaResolucion|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>CuantidadReabierta</th>
+                <td>{{ incidencia.cuantidadReabierta }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_incidencia_index') }}">back to list</a>
+    {% set mensaje = 'Avería en ' ~ incidencia.zona.comunidad.nombre ~ ', ' ~ incidencia.zona.comunidad.direccion ~ '. Zona: ' ~ incidencia.zona.nombre ~ '. ' ~ incidencia.descripcion ~ ' (código ' ~ incidencia.codigo ~ ')' %}
+
+    <a href="https://wa.me/?text={{ mensaje|url_encode }}" target="_blank" class="btn btn-success">Solicitar reparación</a>
+
+    <a href="{{ path('app_incidencia_edit', {'id': incidencia.id}) }}">edit</a>
+
+    {{ include('incidencia/_delete_form.html.twig') }}
+{% endblock %}

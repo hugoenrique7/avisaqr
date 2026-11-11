@@ -66,7 +66,7 @@ final class ComunidadController extends AbstractController
     {
         $this->comprobarPropietario($comunidad);
 
-        // solo las zonas que tienen QR
+      
         $zonas = [];
         foreach ($comunidad->getZonas() as $zona) {
             if ($zona->isTieneQr()) {
