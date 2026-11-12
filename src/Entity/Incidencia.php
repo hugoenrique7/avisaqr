@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: IncidenciaRepository::class)]
 class Incidencia
@@ -22,15 +23,19 @@ class Incidencia
     private ?string $codigo = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'Cuéntanos que ocurre.')]
+    #[Assert\Length(max: 1000)]
     private ?string $descripcion = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $foto = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Length(max: 20)]
     private ?string $piso = null;
 
     #[ORM\Column(length: 15, nullable: true)]
+    #[Assert\Length(max: 15)]
     private ?string $telefono = null;
 
     #[ORM\Column(enumType: EstadoIncidencia::class)]

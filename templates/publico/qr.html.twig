@@ -1,14 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Avisar de una avería · AvisaQR{% endblock %}
+{% block title %}{{ zona.nombre }} · AvisaQR{% endblock %}
 
 {% block body %}
-<div class="container py-4">
-    <h1 class="h4">{{ zona.nombre }}</h1>
-    <p class="text-muted">{{ zona.comunidad.nombre }}</p>
+    <div class="container py-4">
+        <h1 class="h4">{{ zona.nombre }}</h1>
+        <p class="text-muted">{{ zona.comunidad.nombre }}</p>
 
-    <div class="alert alert-info">
-        Aquí irá el formulario para avisar de una avería.
+        <h2 class="h5 mt-4">Averías abiertas en esta zona</h2>
+
+        {% for incidencia in abiertas %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ incidencia.codigo }}</strong>
+                        <span class="badge text-bg-warning">{{ incidencia.estado.etiqueta }}</span>
+                    </div>
+                    <p class="mb-1 mt-2">{{ incidencia.descripcion }}</p>
+                    <small class="text-muted">
+                        Avisada el {{ incidencia.fechaCreacion|date('d/m/Y') }}
+                        · {{ incidencia.afectados|length }} vecinos afectados
+                    </small>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-success">No hay averías abiertas en esta zona.</div>
+        {% endfor %}
+
+        {% for codigo in app.flashes('codigo') %}
+            <div class="alert alert-success mt-4">
+                Aviso enviado. Tu código es <strong>{{ codigo }}</strong>. Guárdalo para consultar cómo va.
+            </div>
+        {% endfor %}
+
+        <h2 class="h5 mt-4">¿Es otra avería? Avisa aquí</h2>
+
+        <div class="card">
+            <div class="card-body">
+                {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <button class="btn btn-primary w-100">Enviar aviso</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
     </div>
-</div>
 {% endblock %}
