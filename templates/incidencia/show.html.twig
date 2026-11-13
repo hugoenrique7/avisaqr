@@ -1,30 +1,84 @@
 {% extends 'panel/layout.html.twig' %}
 
-{% block title %}Avería {{ incidencia.codigo }}{% endblock %}
+{% block title %}Avería {{ incidencia.codigo }} · AvisaQR{% endblock %}
 
 {% block body %}
-<h1 class="h3 mb-3">Avería {{ incidencia.codigo }}</h1>
+    <div class="container">
+        <a href="{{ path('app_incidencia_index') }}" class="small">&larr; Volver a las averías</a>
+        <h1 class="h4 my-3">Avería {{ incidencia.codigo }}</h1>
 
-<table class="table">
-    <tbody>
-        <tr><th>Comunidad</th><td>{{ incidencia.zona.comunidad.nombre }}</td></tr>
-        <tr><th>Zona</th><td>{{ incidencia.zona.nombre }}</td></tr>
-        <tr><th>Descripción</th><td>{{ incidencia.descripcion }}</td></tr>
-        <tr><th>Piso</th><td>{{ incidencia.piso }}</td></tr>
-        <tr><th>Teléfono</th><td>{{ incidencia.telefono }}</td></tr>
-        <tr><th>Estado</th><td>{{ incidencia.estado.etiqueta }}</td></tr>
-        <tr><th>Prioridad</th><td>{{ incidencia.prioridad ? incidencia.prioridad.etiqueta : 'Sin prioridad' }}</td></tr>
-        <tr><th>Afectados</th><td>{{ incidencia.afectados|length }}</td></tr>
-        <tr><th>Reaperturas</th><td>{{ incidencia.cuantidadReabierta }}</td></tr>
-        <tr><th>Fecha</th><td>{{ incidencia.fechaCreacion|date('d/m/Y H:i') }}</td></tr>
-        <tr><th>Fecha de resolución</th><td>{{ incidencia.fechaResolucion ? incidencia.fechaResolucion|date('d/m/Y H:i') : '' }}</td></tr>
-    </tbody>
-</table>
+        <div class="row">
+            <div class="{{ incidencia.foto ? 'col-md-8' : 'col-12' }}">
+                <table class="table bg-white">
+                    <tbody>
+                        <tr>
+                            <th>Comunidad</th>
+                            <td>{{ incidencia.zona.comunidad.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dirección</th>
+                            <td>{{ incidencia.zona.comunidad.direccion }}</td>
+                        </tr>
+                        <tr>
+                            <th>Zona</th>
+                            <td>{{ incidencia.zona.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th>Estado</th>
+                            <td>{{ incidencia.estado.etiqueta }}</td>
+                        </tr>
+                        <tr>
+                            <th>Prioridad</th>
+                            <td>{{ incidencia.prioridad ? incidencia.prioridad.etiqueta : 'Sin prioridad' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Descripción</th>
+                            <td>{{ incidencia.descripcion }}</td>
+                        </tr>
+                        <tr>
+                            <th>Piso</th>
+                            <td>{{ incidencia.piso ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Teléfono</th>
+                            <td>{{ incidencia.telefono ?: '—' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Vecinos afectados</th>
+                            <td>{{ incidencia.afectados|length }}</td>
+                        </tr>
+                        <tr>
+                            <th>Reaperturas</th>
+                            <td>{{ incidencia.cuantidadReabierta }}</td>
+                        </tr>
+                        <tr>
+                            <th>Avisada el</th>
+                            <td>{{ incidencia.fechaCreacion|date('d/m/Y H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Resuelta el</th>
+                            <td>{{ incidencia.fechaResolucion ? incidencia.fechaResolucion|date('d/m/Y H:i') : '—' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-{% set mensaje = 'Avería en ' ~ incidencia.zona.comunidad.nombre ~ ', ' ~ incidencia.zona.comunidad.direccion ~ '. Zona: ' ~ incidencia.zona.nombre ~ '. ' ~ incidencia.descripcion ~ ' (código ' ~ incidencia.codigo ~ ')' %}
+            {% if incidencia.foto %}
+                <div class="col-md-4 text-center mb-3">
+               
+                    <img src="{{ asset('uploads/' ~ incidencia.foto) }}" alt="Foto de la avería" class="img-fluid rounded">
+               
+              
+                </div>
+            {% endif %}
+        </div>
 
-<a href="{{ path('app_incidencia_index') }}" class="btn btn-secondary">Volver</a>
-<a href="{{ path('app_incidencia_edit', {'id': incidencia.id}) }}" class="btn btn-primary">Editar</a>
-<a href="https://wa.me/?text={{ mensaje|url_encode }}" target="_blank" class="btn btn-success">Solicitar reparación</a>
-{{ include('incidencia/_delete_form.html.twig') }}
+        {% set mensaje = 'Avería en ' ~ incidencia.zona.comunidad.nombre ~ ', ' ~ incidencia.zona.comunidad.direccion ~ '. Zona: ' ~ incidencia.zona.nombre ~ '. ' ~ incidencia.descripcion ~ ' (código ' ~ incidencia.codigo ~ ')' %}
+
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ path('app_incidencia_edit', {'id': incidencia.id}) }}" class="btn btn-primary">Editar estado y prioridad</a>
+            <a href="https://wa.me/?text={{ mensaje|url_encode }}" target="_blank" class="btn btn-success">Solicitar reparación</a>
+            {{ include('incidencia/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

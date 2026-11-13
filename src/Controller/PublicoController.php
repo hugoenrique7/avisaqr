@@ -17,8 +17,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Comunidad;
 
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
+
+
+
 final class PublicoController extends AbstractController
 {
+    public function __construct(
+        private RateLimiterFactoryInterface $pinLimiter,
+        private RateLimiterFactoryInterface $averiasLimiter,
+    ) {}
+
     #[Route('/q/{id}', name: 'app_publico_qr', methods: ['GET', 'POST'])]
     public function qr(Zona $zona, Request $request, IncidenciaRepository $incidenciaRepository, EntityManagerInterface $entityManager): Response
     {
@@ -36,12 +45,14 @@ final class PublicoController extends AbstractController
         $form = $this->createForm(IncidenciaVecinoType::class, $incidencia);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid() && $this->puedeEnviar($form, $request)) {
+
+
             $incidencia->setZona($zona);
 
             $codigo = $this->nuevoCodigo($incidenciaRepository);
             $incidencia->setCodigo($codigo);
-
+            $this->guardarFoto($form, $incidencia);
             $entityManager->persist($incidencia);
             $entityManager->flush();
 
@@ -77,9 +88,10 @@ final class PublicoController extends AbstractController
         $form = $this->createForm(IncidenciaVecinoType::class, $incidencia, ['comunidad' => $comunidad]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid() && $this->puedeEnviar($form, $request)) {
             $codigo = $this->nuevoCodigo($incidenciaRepository);
             $incidencia->setCodigo($codigo);
+            $this->guardarFoto($form, $incidencia);
 
             $entityManager->persist($incidencia);
             $entityManager->flush();
@@ -200,13 +212,17 @@ final class PublicoController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('pin')->getData() === $comunidad->getPin()) {
+            $limite = $this->pinLimiter->create($request->getClientIp());
+
+            if (!$limite->consume()->isAccepted()) {
+                $form->get('pin')->addError(new FormError('Demasiados intentos. Esperar 10 min.'));
+            } elseif ($form->get('pin')->getData() === $comunidad->getPin()) {
                 $session->set($clave, true);
 
                 return $this->redirect($request->getUri());
+            } else {
+                $form->get('pin')->addError(new FormError('El PIN no es correcto.'));
             }
-
-            $form->get('pin')->addError(new FormError('El PIN no es correcto.'));
         }
 
         return $this->render('publico/pin.html.twig', [
@@ -221,5 +237,29 @@ final class PublicoController extends AbstractController
         } while ($incidenciaRepository->findOneBy(['codigo' => $codigo]));
 
         return $codigo;
+    }
+
+    private function guardarFoto($form, Incidencia $incidencia): void
+    {
+        $archivo = $form->get('foto')->getData();
+
+        if ($archivo) {
+            $nombre = bin2hex(random_bytes(8)) . '.' . $archivo->guessExtension();
+            $archivo->move($this->getParameter('kernel.project_dir') . '/public/uploads', $nombre);
+            $incidencia->setFoto($nombre);
+        }
+    }
+
+    private function puedeEnviar($form, Request $request): bool
+    {
+        $limite = $this->averiasLimiter->create($request->getClientIp());
+
+        if (!$limite->consume()->isAccepted()) {
+            $form->addError(new FormError('Has enviado demasiados avisos. Inténtalo más tarde.'));
+
+            return false;
+        }
+
+        return true;
     }
 }

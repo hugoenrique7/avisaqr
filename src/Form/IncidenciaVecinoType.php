@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\Image;
 
 class IncidenciaVecinoType extends AbstractType
 {
@@ -33,7 +35,13 @@ class IncidenciaVecinoType extends AbstractType
             ->add('descripcion', TextareaType::class, [
                 'label' => '¿Qué ocurre?',
                 'empty_data' => '',
-                'attr' => ['rows' => 4, 'placeholder' => 'Por ejemplo: la luz del portal no se enciende'],
+                'attr' => ['rows' => 4],
+            ])
+            ->add('foto', FileType::class, [
+                'label' => 'Foto (opcional)',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [new Image()],
             ])
             ->add('piso', TextType::class, [
                 'label' => 'Piso (opcional)',
