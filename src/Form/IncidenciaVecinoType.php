@@ -18,7 +18,7 @@ class IncidenciaVecinoType extends AbstractType
             ->add('descripcion', TextareaType::class, [
                 'label' => '¿Qué ocurre?',
                 'empty_data' => '',
-                'attr' => ['rows' => 4, 'placeholder' => 'Por ejemplo: la luz del portal no se enciende'],
+                'attr' => ['rows' => 4],
             ])
             ->add('piso', TextType::class, [
                 'label' => 'Piso (opcional)',

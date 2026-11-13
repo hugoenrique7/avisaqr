@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Afectado;
 use App\Entity\Incidencia;
 use App\Entity\Zona;
 use App\Enum\EstadoIncidencia;
@@ -82,5 +83,30 @@ final class PublicoController extends AbstractController
             'abiertas' => $abiertas,
             'form' => $form,
         ]);
+    }
+    #[Route('/afecta/{id}', name: 'app_publico_afecta', methods: ['POST'])]
+    public function meAfecta(Incidencia $incidencia, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $zona = $incidencia->getZona();
+        $session = $request->getSession();
+
+        if (!$session->get('pin_comunidad_' . $zona->getComunidad()->getId())) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $clave = 'afecta_' . $incidencia->getId();
+        $abierta = in_array($incidencia->getEstado(), [EstadoIncidencia::Recibida, EstadoIncidencia::EnReparacion]);
+
+        if ($abierta && !$session->get($clave) && $this->isCsrfTokenValid('afecta' . $incidencia->getId(), $request->getPayload()->getString('_token'))) {
+            $afectado = new Afectado();
+            $afectado->setIncidencia($incidencia);
+
+            $entityManager->persist($afectado);
+            $entityManager->flush();
+
+            $session->set($clave, true);
+        }
+
+        return $this->redirectToRoute('app_publico_qr', ['id' => $zona->getId()]);
     }
 }

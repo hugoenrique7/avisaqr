@@ -21,6 +21,16 @@
                         Avisada el {{ incidencia.fechaCreacion|date('d/m/Y') }}
                         · {{ incidencia.afectados|length }} vecinos afectados
                     </small>
+                    <div class="mt-2">
+                        {% if app.session.get('afecta_' ~ incidencia.id) %}
+                            <span class="text-success">Te has sumado a esta avería</span>
+                        {% else %}
+                            <form method="post" action="{{ path('app_publico_afecta', {'id': incidencia.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('afecta' ~ incidencia.id) }}">
+                                <button class="btn btn-sm btn-outline-primary">Me afecta</button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         {% else %}
