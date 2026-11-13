@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Historial · {{ zona.comunidad.nombre }}{% endblock %}
+{% block title %}Historial · {{ comunidad.nombre }}{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <a href="{{ path('app_publico_qr', {'id': zona.id}) }}" class="small">&larr; Volver</a>
+        <a href="{{ path('app_publico_comunidad', {'id': comunidad.id}) }}" class="small">&larr; Volver a la comunidad</a>
 
         {% if codigo %}
             <h1 class="h4 mt-3">Consulta del código {{ codigo }}</h1>
         {% else %}
             <h1 class="h4 mt-3">Historial de averías</h1>
         {% endif %}
-        <p class="text-muted">{{ zona.comunidad.nombre }}</p>
+        <p class="text-muted">{{ comunidad.nombre }}</p>
 
         {% for incidencia in incidencias %}
             <div class="card mb-2">
@@ -38,7 +38,7 @@
                                     onsubmit="return confirm('¿Seguro que sigue sin funcionar?');"
                                 >
                                     <input type="hidden" name="_token" value="{{ csrf_token('reabrir' ~ incidencia.id) }}">
-                                    <input type="hidden" name="zona" value="{{ zona.id }}">
+                                  
                                     <button class="btn btn-sm btn-outline-danger">Sigue sin funcionar</button>
                                 </form>
                             {% endif %}

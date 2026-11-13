@@ -25,7 +25,12 @@
                     <dd class="col-sm-9">{{ comunidad.direccion }}</dd>
 
                     <dt class="col-sm-3">PIN</dt>
-                    <dd class="col-sm-9 mb-0"><code>{{ comunidad.pin }}</code></dd>
+                 <dd class="col-sm-9"><code>{{ comunidad.pin }}</code></dd>
+                 
+                    <dt class="col-sm-3">Página de los vecinos</dt>
+                    <dd class="col-sm-9 mb-0">
+                        <a href="{{ url('app_publico_comunidad', {'id': comunidad.id}) }}" target="_blank">{{ url('app_publico_comunidad', {'id': comunidad.id}) }}</a>
+                    </dd>
                 </dl>
             </div>
         </div>
@@ -77,5 +82,34 @@
                 </table>
             </div>
         {% endif %}
+
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+            <h2 class="h5 mb-0">Avisos del tablón</h2>
+            <a href="{{ path('app_aviso_new', {'id': comunidad.id}) }}" class="btn btn-primary btn-sm">Nuevo aviso</a>
+        </div>
+
+        {% for aviso in comunidad.avisos %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ aviso.titulo }}</strong>
+                        <small class="text-muted">{{ aviso.fecha|date('d/m/Y') }}</small>
+                    </div>
+                    <p class="mb-2 mt-2">{{ aviso.texto|nl2br }}</p>
+                    <form
+                        method="post"
+                        action="{{ path('app_aviso_delete', {'id': aviso.id}) }}"
+                        onsubmit="return confirm('¿Seguro que quieres borrar este aviso?');"
+                    >
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ aviso.id) }}">
+                        <button class="btn btn-sm btn-outline-danger">Borrar</button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">Esta comunidad todavía no tiene avisos.</div>
+        {% endfor %}
     </div>
+
+    
 {% endblock %}

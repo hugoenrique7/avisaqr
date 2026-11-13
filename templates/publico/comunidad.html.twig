@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ comunidad.nombre }} · AvisaQR{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="h4">{{ comunidad.nombre }}</h1>
+        <p class="text-muted">{{ comunidad.direccion }}</p>
+
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+            <a href="{{ path('app_publico_historial', {'id': comunidad.id}) }}" class="btn btn-sm btn-outline-secondary">Ver historial</a>
+
+            <form method="get" action="{{ path('app_publico_historial', {'id': comunidad.id}) }}" class="d-flex gap-2">
+                <input type="text" name="codigo" class="form-control form-control-sm" placeholder="Código de tu aviso" maxlength="10" required>
+                <button class="btn btn-sm btn-primary">Consultar</button>
+            </form>
+        </div>
+
+        {% for codigo in app.flashes('codigo') %}
+            <div class="alert alert-success">
+                Aviso enviado. Tu código es <strong>{{ codigo }}</strong>. Guárdalo para consultar cómo va.
+            </div>
+        {% endfor %}
+
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#formAveria">
+            Avisar de una avería
+        </button>
+
+        <div class="collapse {{ form.vars.submitted ? 'show' }}" id="formAveria">
+            <div class="card mt-3">
+                <div class="card-body">
+                    {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <button class="btn btn-primary w-100">Enviar aviso</button>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+        {% for aviso in comunidad.avisos %}
+            <div class="alert alert-info mt-3 mb-0">
+                <strong>{{ aviso.titulo }}</strong>
+                <small class="text-muted">· {{ aviso.fecha|date('d/m/Y') }}</small>
+                <p class="mb-0 mt-1">{{ aviso.texto|nl2br }}</p>
+            </div>
+        {% endfor %}
+
+        <h2 class="h5 mt-4">Averías abiertas</h2>
+
+        {% for incidencia in abiertas %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ incidencia.codigo }} · {{ incidencia.zona.nombre }}</strong>
+                        <span class="badge text-bg-warning">{{ incidencia.estado.etiqueta }}</span>
+                    </div>
+                    <p class="mb-1 mt-2">{{ incidencia.descripcion }}</p>
+                    <small class="text-muted">
+                        Avisada el {{ incidencia.fechaCreacion|date('d/m/Y') }}
+                        · {{ incidencia.afectados|length }} vecinos afectados
+                    </small>
+                    <div class="mt-2">
+                        {% if app.session.get('afecta_' ~ incidencia.id) %}
+                            <span class="text-success">Te has sumado a esta avería</span>
+                        {% else %}
+                            <form method="post" action="{{ path('app_publico_afecta', {'id': incidencia.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('afecta' ~ incidencia.id) }}">
+                                <input type="hidden" name="volver" value="comunidad">
+                                <button class="btn btn-sm btn-outline-primary">Me afecta</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-success">No hay averías abiertas en la comunidad.</div>
+        {% endfor %}
+    </div>
+{% endblock %}

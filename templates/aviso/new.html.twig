@@ -1,0 +1,23 @@
+{% extends 'panel/layout.html.twig' %}
+
+{% block title %}Nuevo aviso · AvisaQR{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7">
+                <a href="{{ path('app_comunidad_show', {'id': comunidad.id}) }}" class="small">&larr; Volver a {{ comunidad.nombre }}</a>
+                <h1 class="h4 my-3">Nuevo aviso</h1>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                            {{ form_widget(form) }}
+                            <button class="btn btn-primary">Publicar</button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

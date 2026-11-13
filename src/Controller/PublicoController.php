@@ -15,6 +15,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\Comunidad;
 
 final class PublicoController extends AbstractController
 {
@@ -25,28 +26,10 @@ final class PublicoController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $comunidad = $zona->getComunidad();
-        $session = $request->getSession();
-        $clave = 'pin_comunidad_' . $comunidad->getId();
+        $respuesta = $this->pedirPin($zona->getComunidad(), $request);
 
-        if (!$session->get($clave)) {
-            $form = $this->createForm(PinType::class);
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                if ($form->get('pin')->getData() === $comunidad->getPin()) {
-                    $session->set($clave, true);
-
-                    return $this->redirectToRoute('app_publico_qr', ['id' => $zona->getId()]);
-                }
-
-                $form->get('pin')->addError(new FormError('El PIN no es correcto.'));
-            }
-
-            return $this->render('publico/pin.html.twig', [
-                'zona' => $zona,
-                'form' => $form,
-            ]);
+        if ($respuesta) {
+            return $respuesta;
         }
 
         $incidencia = new Incidencia();
@@ -56,10 +39,7 @@ final class PublicoController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $incidencia->setZona($zona);
 
-            do {
-                $codigo = strtoupper(bin2hex(random_bytes(3)));
-            } while ($incidenciaRepository->findOneBy(['codigo' => $codigo]));
-
+            $codigo = $this->nuevoCodigo($incidenciaRepository);
             $incidencia->setCodigo($codigo);
 
             $entityManager->persist($incidencia);
@@ -84,6 +64,47 @@ final class PublicoController extends AbstractController
             'form' => $form,
         ]);
     }
+    #[Route('/c/{id}', name: 'app_publico_comunidad', methods: ['GET', 'POST'])]
+    public function comunidad(Comunidad $comunidad, Request $request, IncidenciaRepository $incidenciaRepository, EntityManagerInterface $entityManager): Response
+    {
+        $respuesta = $this->pedirPin($comunidad, $request);
+
+        if ($respuesta) {
+            return $respuesta;
+        }
+
+        $incidencia = new Incidencia();
+        $form = $this->createForm(IncidenciaVecinoType::class, $incidencia, ['comunidad' => $comunidad]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $codigo = $this->nuevoCodigo($incidenciaRepository);
+            $incidencia->setCodigo($codigo);
+
+            $entityManager->persist($incidencia);
+            $entityManager->flush();
+
+            $this->addFlash('codigo', $codigo);
+
+            return $this->redirectToRoute('app_publico_comunidad', ['id' => $comunidad->getId()]);
+        }
+
+        $abiertas = [];
+
+        foreach ($incidenciaRepository->findDeComunidad($comunidad) as $averia) {
+            if (in_array($averia->getEstado(), [EstadoIncidencia::Recibida, EstadoIncidencia::EnReparacion])) {
+                $abiertas[] = $averia;
+            }
+        }
+
+        return $this->render('publico/comunidad.html.twig', [
+            'comunidad' => $comunidad,
+            'abiertas' => $abiertas,
+            'form' => $form,
+        ]);
+    }
+
+
     #[Route('/afecta/{id}', name: 'app_publico_afecta', methods: ['POST'])]
     public function meAfecta(Incidencia $incidencia, Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -107,15 +128,20 @@ final class PublicoController extends AbstractController
             $session->set($clave, true);
         }
 
+        if ($request->getPayload()->getString('volver') === 'comunidad') {
+            return $this->redirectToRoute('app_publico_comunidad', ['id' => $zona->getComunidad()->getId()]);
+        }
+
         return $this->redirectToRoute('app_publico_qr', ['id' => $zona->getId()]);
     }
     #[Route('/q/{id}/historial', name: 'app_publico_historial', methods: ['GET'])]
-    public function historial(Zona $zona, Request $request, IncidenciaRepository $incidenciaRepository): Response
+    #[Route('/c/{id}/historial', name: 'app_publico_historial', methods: ['GET', 'POST'])]
+    public function historial(Comunidad $comunidad, Request $request, IncidenciaRepository $incidenciaRepository): Response
     {
-        $comunidad = $zona->getComunidad();
+        $respuesta = $this->pedirPin($comunidad, $request);
 
-        if (!$request->getSession()->get('pin_comunidad_' . $comunidad->getId())) {
-            return $this->redirectToRoute('app_publico_qr', ['id' => $zona->getId()]);
+        if ($respuesta) {
+            return $respuesta;
         }
 
         $codigo = strtoupper(trim($request->query->get('codigo', '')));
@@ -132,7 +158,7 @@ final class PublicoController extends AbstractController
         }
 
         return $this->render('publico/historial.html.twig', [
-            'zona' => $zona,
+            'comunidad' => $comunidad,
             'incidencias' => $incidencias,
             'codigo' => $codigo,
         ]);
@@ -158,6 +184,42 @@ final class PublicoController extends AbstractController
             $session->set($clave, true);
         }
 
-        return $this->redirectToRoute('app_publico_historial', ['id' => $request->getPayload()->getInt('zona')]);
+        return $this->redirectToRoute('app_publico_historial', ['id' => $incidencia->getZona()->getComunidad()->getId()]);
+    }
+
+    private function pedirPin(Comunidad $comunidad, Request $request): ?Response
+    {
+        $session = $request->getSession();
+        $clave = 'pin_comunidad_' . $comunidad->getId();
+
+        if ($session->get($clave)) {
+            return null;
+        }
+
+        $form = $this->createForm(PinType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('pin')->getData() === $comunidad->getPin()) {
+                $session->set($clave, true);
+
+                return $this->redirect($request->getUri());
+            }
+
+            $form->get('pin')->addError(new FormError('El PIN no es correcto.'));
+        }
+
+        return $this->render('publico/pin.html.twig', [
+            'comunidad' => $comunidad,
+            'form' => $form,
+        ]);
+    }
+    private function nuevoCodigo(IncidenciaRepository $incidenciaRepository): string
+    {
+        do {
+            $codigo = strtoupper(bin2hex(random_bytes(3)));
+        } while ($incidenciaRepository->findOneBy(['codigo' => $codigo]));
+
+        return $codigo;
     }
 }

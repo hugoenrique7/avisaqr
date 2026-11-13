@@ -47,6 +47,7 @@ class Comunidad
      * @var Collection<int, Aviso>
      */
     #[ORM\OneToMany(targetEntity: Aviso::class, mappedBy: 'comunidad')]
+    #[ORM\OrderBy(['fecha' => 'DESC'])]
     private Collection $avisos;
 
     public function __construct()

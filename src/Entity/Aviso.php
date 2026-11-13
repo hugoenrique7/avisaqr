@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\AvisoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AvisoRepository::class)]
 class Aviso
@@ -15,9 +16,12 @@ class Aviso
     private ?int $id = null;
 
     #[ORM\Column(length: 150)]
+    #[Assert\NotBlank(message: 'Escribe un titulo.')]
+    #[Assert\Length(max: 150)]
     private ?string $titulo = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'Escribe el texto del aviso')]
     private ?string $texto = null;
 
     #[ORM\Column]
@@ -36,7 +40,7 @@ class Aviso
         return $this->id;
     }
 
-    
+
     public function getTitulo(): ?string
     {
         return $this->titulo;
