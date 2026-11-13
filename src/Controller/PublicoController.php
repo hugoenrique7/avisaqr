@@ -109,4 +109,55 @@ final class PublicoController extends AbstractController
 
         return $this->redirectToRoute('app_publico_qr', ['id' => $zona->getId()]);
     }
+    #[Route('/q/{id}/historial', name: 'app_publico_historial', methods: ['GET'])]
+    public function historial(Zona $zona, Request $request, IncidenciaRepository $incidenciaRepository): Response
+    {
+        $comunidad = $zona->getComunidad();
+
+        if (!$request->getSession()->get('pin_comunidad_' . $comunidad->getId())) {
+            return $this->redirectToRoute('app_publico_qr', ['id' => $zona->getId()]);
+        }
+
+        $codigo = strtoupper(trim($request->query->get('codigo', '')));
+
+        if ($codigo !== '') {
+            $incidencias = [];
+            $incidencia = $incidenciaRepository->findOneBy(['codigo' => $codigo]);
+
+            if ($incidencia && $incidencia->getZona()->getComunidad() === $comunidad) {
+                $incidencias = [$incidencia];
+            }
+        } else {
+            $incidencias = $incidenciaRepository->findDeComunidad($comunidad);
+        }
+
+        return $this->render('publico/historial.html.twig', [
+            'zona' => $zona,
+            'incidencias' => $incidencias,
+            'codigo' => $codigo,
+        ]);
+    }
+    #[Route('/reabrir/{id}', name: 'app_publico_reabrir', methods: ['POST'])]
+    public function reabrir(Incidencia $incidencia, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $session = $request->getSession();
+
+        if (!$session->get('pin_comunidad_' . $incidencia->getZona()->getComunidad()->getId())) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $clave = 'reabrir_' . $incidencia->getId();
+
+        if ($incidencia->getEstado() === EstadoIncidencia::Resuelta && !$session->get($clave) && $this->isCsrfTokenValid('reabrir' . $incidencia->getId(), $request->getPayload()->getString('_token'))) {
+            $incidencia->setEstado(EstadoIncidencia::Recibida);
+            $incidencia->setFechaResolucion(null);
+            $incidencia->setCuantidadReabierta($incidencia->getCuantidadReabierta() + 1);
+
+            $entityManager->flush();
+
+            $session->set($clave, true);
+        }
+
+        return $this->redirectToRoute('app_publico_historial', ['id' => $request->getPayload()->getInt('zona')]);
+    }
 }

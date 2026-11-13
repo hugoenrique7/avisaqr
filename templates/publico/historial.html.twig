@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historial · {{ zona.comunidad.nombre }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <a href="{{ path('app_publico_qr', {'id': zona.id}) }}" class="small">&larr; Volver</a>
+
+        {% if codigo %}
+            <h1 class="h4 mt-3">Consulta del código {{ codigo }}</h1>
+        {% else %}
+            <h1 class="h4 mt-3">Historial de averías</h1>
+        {% endif %}
+        <p class="text-muted">{{ zona.comunidad.nombre }}</p>
+
+        {% for incidencia in incidencias %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <strong>{{ incidencia.codigo }} · {{ incidencia.zona.nombre }}</strong>
+                        <span class="badge text-bg-secondary">{{ incidencia.estado.etiqueta }}</span>
+                    </div>
+                    <p class="mb-1 mt-2">{{ incidencia.descripcion }}</p>
+                    <small class="text-muted">
+                        Avisada el {{ incidencia.fechaCreacion|date('d/m/Y') }}
+                        {% if incidencia.fechaResolucion %}
+                            · Resuelta el {{ incidencia.fechaResolucion|date('d/m/Y') }}
+                        {% endif %}
+                    </small>
+                    {% if incidencia.estado.value == 'resuelta' %}
+                        <div class="mt-2">
+                            {% if app.session.get('reabrir_' ~ incidencia.id) %}
+                                <span class="text-success">Has avisado de que sigue sin funcionar</span>
+                            {% else %}
+                                <form
+                                    method="post"
+                                    action="{{ path('app_publico_reabrir', {'id': incidencia.id}) }}"
+                                    onsubmit="return confirm('¿Seguro que sigue sin funcionar?');"
+                                >
+                                    <input type="hidden" name="_token" value="{{ csrf_token('reabrir' ~ incidencia.id) }}">
+                                    <input type="hidden" name="zona" value="{{ zona.id }}">
+                                    <button class="btn btn-sm btn-outline-danger">Sigue sin funcionar</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            {% if codigo %}
+                <div class="alert alert-warning">No hay ninguna avería con el código {{ codigo }} en esta comunidad.</div>
+            {% else %}
+                <div class="alert alert-info">Todavía no hay averías en esta comunidad.</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

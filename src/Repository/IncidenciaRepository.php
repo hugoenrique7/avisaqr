@@ -54,4 +54,14 @@ class IncidenciaRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    public function findDeComunidad($comunidad): array
+    {
+        return $this->createQueryBuilder('i')
+            ->join('i.zona', 'z')
+            ->andWhere('z.comunidad = :comunidad')
+            ->setParameter('comunidad', $comunidad)
+            ->orderBy('i.fechaCreacion', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
