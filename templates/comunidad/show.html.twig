@@ -9,6 +9,7 @@
         <div class="d-flex justify-content-between align-items-center my-3">
             <h1 class="h4 mb-0">{{ comunidad.nombre }}</h1>
             <div>
+                <a href="{{ path('app_comunidad_informe', {'id': comunidad.id}) }}" class="btn btn-sm btn-outline-secondary">Informe</a>
                 <a href="{{ path('app_comunidad_edit', {'id': comunidad.id}) }}" class="btn btn-sm btn-outline-primary">Editar</a>
                 {{ include('comunidad/_delete_form.html.twig') }}
                
@@ -26,7 +27,7 @@
 
                     <dt class="col-sm-3">PIN</dt>
                  <dd class="col-sm-9"><code>{{ comunidad.pin }}</code></dd>
-                 
+
                     <dt class="col-sm-3">Página de los vecinos</dt>
                     <dd class="col-sm-9 mb-0">
                         <a href="{{ url('app_publico_comunidad', {'id': comunidad.id}) }}" target="_blank">{{ url('app_publico_comunidad', {'id': comunidad.id}) }}</a>

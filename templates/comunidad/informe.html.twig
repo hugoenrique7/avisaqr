@@ -1,0 +1,71 @@
+{% extends 'panel/layout.html.twig' %}
+
+{% block title %}Informe · {{ comunidad.nombre }}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <a href="{{ path('app_comunidad_show', {'id': comunidad.id}) }}" class="small">&larr; Volver a {{ comunidad.nombre }}</a>
+    <h1 class="h4 my-3">Informe de {{ comunidad.nombre }}</h1>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="h3 mb-0">{{ total }}</div>
+                    <small class="text-muted">Averías en total</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="h3 mb-0">{{ abiertas }}</div>
+                    <small class="text-muted">Abiertas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="h3 mb-0">{{ resueltas }}</div>
+                    <small class="text-muted">Resueltas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="h3 mb-0">
+                        {% if media is not null %}
+                            {{ media }} días
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">Tiempo medio de reparación</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h5">Averías por zona</h2>
+    <table class="table bg-white">
+        <thead class="table-light">
+            <tr>
+                <th>Zona</th>
+                <th class="text-end">Averías</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nombre, cantidad in porZona %}
+                <tr>
+                    <td>{{ nombre }}</td>
+                    <td class="text-end">{{ cantidad }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2">Esta comunidad no tiene zonas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

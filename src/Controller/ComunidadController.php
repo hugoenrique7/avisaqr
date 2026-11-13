@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Enum\EstadoIncidencia;
 
 
 #[Route('/panel/comunidades')]
@@ -61,12 +62,50 @@ final class ComunidadController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/informe', name: 'app_comunidad_informe', methods: ['GET'])]
+    public function informe(Comunidad $comunidad): Response
+    {
+        $this->comprobarPropietario($comunidad);
+
+        $total = 0;
+        $abiertas = 0;
+        $resueltas = 0;
+        $dias = 0;
+        $porZona = [];
+
+        foreach ($comunidad->getZonas() as $zona) {
+            $porZona[$zona->getNombre()] = count($zona->getIncidencias());
+
+            foreach ($zona->getIncidencias() as $incidencia) {
+                $total++;
+
+                if ($incidencia->getEstado() === EstadoIncidencia::Resuelta) {
+                    $resueltas++;
+                    $dias += $incidencia->getFechaCreacion()->diff($incidencia->getFechaResolucion())->days;
+                } elseif (in_array($incidencia->getEstado(), [EstadoIncidencia::Recibida, EstadoIncidencia::EnReparacion])) {
+                    $abiertas++;
+                }
+            }
+        }
+
+        $media = $resueltas > 0 ? round($dias / $resueltas, 1) : null;
+
+        return $this->render('comunidad/informe.html.twig', [
+            'comunidad' => $comunidad,
+            'total' => $total,
+            'abiertas' => $abiertas,
+            'resueltas' => $resueltas,
+            'media' => $media,
+            'porZona' => $porZona,
+        ]);
+    }
+
     #[Route('/{id}/qr', name: 'app_comunidad_qr', methods: ['GET'])]
     public function qr(Comunidad $comunidad): Response
     {
         $this->comprobarPropietario($comunidad);
 
-      
+
         $zonas = [];
         foreach ($comunidad->getZonas() as $zona) {
             if ($zona->isTieneQr()) {
