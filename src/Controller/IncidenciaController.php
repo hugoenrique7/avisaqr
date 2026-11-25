@@ -35,6 +35,18 @@ final class IncidenciaController extends AbstractController
         ]);
     }
 
+
+    #[Route('/{id}/foto', name: 'app_incidencia_foto', methods: ['GET'])]
+    public function foto(Incidencia $incidencia): Response
+    {
+        if ($incidencia->getZona()->getComunidad()->getAdministrador() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $this->file($this->getParameter('kernel.project_dir') . '/var/uploads/' . $incidencia->getFoto());
+    }
+    
+
     #[Route('/{id}/edit', name: 'app_incidencia_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Incidencia $incidencia, EntityManagerInterface $entityManager): Response
     {

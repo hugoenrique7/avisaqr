@@ -245,7 +245,8 @@ final class PublicoController extends AbstractController
 
         if ($archivo) {
             $nombre = bin2hex(random_bytes(8)) . '.' . $archivo->guessExtension();
-            $archivo->move($this->getParameter('kernel.project_dir') . '/public/uploads', $nombre);
+           
+            $archivo->move($this->getParameter('kernel.project_dir') . '/var/uploads', $nombre);
             $incidencia->setFoto($nombre);
         }
     }
